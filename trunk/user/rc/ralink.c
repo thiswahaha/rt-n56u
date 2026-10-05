@@ -1563,6 +1563,16 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	fprintf(fp, "ApCliSsid=%s\n", p_str);
 	fprintf(fp, "ApCliBssid=\n");
 
+#if defined(USE_WID_5G) && (USE_WID_5G == 7615)
+	if (is_aband) {
+		/* MT7615 的 5GHz 无线上联在 AP 桥接时启用 MAC 中继，转发桥后设备的 DHCP/ARP 等流量。 */
+		/* mode_x=3 为 Client，4 为 AP+Client；只有配置了上联 SSID 才启用。 */
+		/* 自动连接时 ApCliEnable 暂为 0，因此根据用户模式判断，不能沿用上面的 i_val。 */
+		int repeater_on = get_ap_mode() && (i_mode_x == 3 || i_mode_x == 4) && strlen(p_str) > 0;
+		fprintf(fp, "MACRepeaterEn=%d\n", repeater_on);
+	}
+#endif
+
 	p_str = nvram_wlan_get(is_aband, "sta_auth_mode");
 	if (!strcmp(p_str, "psk"))
 	{
