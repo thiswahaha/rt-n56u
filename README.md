@@ -198,6 +198,12 @@ fakeroot ./build_firmware_modify PSG1218
 ./clear_tree
 ```
 
+* 在 GitHub Actions 中可选编译 RM2100
+
+打开 **Actions → Build RM2100 firmware → Run workflow**。Action 会基于本仓库的 `trunk/configs/templates/RM2100.config`，默认关闭 OpenVPN、DOGCOM、NAPT66、VLMCSD、XUPNPD、SRELAY 和 SMBD36，其余功能沿用模板值。调整只发生在 Runner 的临时工作区。
+
+`feature_overrides` 留空时使用上述 Action 默认配置；需要调整功能时，填入逗号分隔的 `INCLUDE_名称=y/n` 或 `ENABLE_名称=y/n`，例如 `INCLUDE_OPENVPN=y,INCLUDE_TTYD=n,INCLUDE_FRPC=y`。用户输入优先于 Action 默认值，`y` 表示启用，`n` 表示关闭。只能修改 RM2100 配置模板中已有的功能项；未知项、重复项和其他值会直接报错。构建成功后，在该次运行的 Artifact 中下载 `.trx` 固件和实际使用的 RM2100 配置。组合功能时请同时启用其依赖项，例如某些 Web 控制界面需要对应的服务本体。
+
 ***
 
 ### 请参阅 ###
